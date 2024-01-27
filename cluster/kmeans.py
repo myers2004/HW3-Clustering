@@ -20,6 +20,8 @@ class KMeans:
             max_iter: int
                 the maximum number of iterations before quitting model fit
         """
+
+        #ensure input arguments are the right type
         if type(k) != int:
             raise(TypeError('k is not of type int'))
         if type(tol) != float:
@@ -47,43 +49,53 @@ class KMeans:
                 A 2D matrix where the rows are observations and columns are features
         """
 
-        SSE = 0
-        num_obs, num_feat = np.shape(mat)
+        SSE = 0 #a dummy SSE(sum of intra-cluster variation of each cluster)
+        num_obs, num_feat = np.shape(mat) #extract number of observations and features in mat
 
-        I = np.random.choice(num_obs, self.k)
-        cluster_centers = mat[I, :]
+        #Pick random points in mat to as the intial cluster centers
+        random_rows = np.random.choice(num_obs, self.k)
+        cluster_centers = mat[random_rows, :]
 
+        #Now to do Loyd's algorithm
         for a in range(0, self.max_iter):
-            cluster_membership = np.zeros((num_obs, self.k))
+            cluster_membership = np.zeros((num_obs, self.k)) #intialize r matrix, denoting which matrix each point belongs to
 
-            dists = cdist(mat, cluster_centers)
+            dists = cdist(mat, cluster_centers) #calculate distance to each cluster center for every point
 
+
+            #Assign each point to the cluster to which it is closest to the center of
             for j in range(num_obs):
                 curr_min_dist = 0
                 for i in range(1, self.k):
                     if dists[j][i] < dists[j][curr_min_dist]:
                         curr_min_dist = i
                 cluster_membership[j][curr_min_dist] = 1
-                
-            new_SSE = 0
+            
+            new_SSE = 0 #To hold the new SSE
 
-            new_clusters = np.zeros((self.k, num_feat))
+            new_clusters = np.zeros((self.k, num_feat)) #to hold the new cluster centers
+
+            #Calculate the new center point of each cluster, and the SSE for the new clusters
             for i in range(self.k):
-                cluster_i = mat[cluster_membership[:, i] == 1]
+                cluster_i = mat[cluster_membership[:, i] == 1] #extracts every row that is a member of cluster i
                 for j in range(np.shape(cluster_i)[0]):
                     for m in range(num_feat):
                         new_SSE += np.power(cluster_i[j][m] - cluster_centers[i][m], 2)
                 new_clusters[i] = np.mean(cluster_i, axis = 0)
             
+            #If the change in SSE is below tolerance, stop Loyd's
             if np.abs(new_SSE - SSE) < self.tol:
                 break
-
+            
+            #update the cluster centers and the SSE and repeat
             cluster_centers = new_clusters
             SSE = new_SSE
 
+        #Don't want to loop forever if change in SSE never goes below tolerance
         if a == self.max_iter:
             raise(RuntimeError('K-means fit failed to converge.'))
         
+        #Save the fitted cluster centers to the object
         self.cluster_centers = cluster_centers
 
 
@@ -104,11 +116,12 @@ class KMeans:
                 a 1D array with the cluster label for each of the observations in `mat`
         """
 
-        num_obs, num_feat = np.shape(mat)
-        cluster_membership = np.zeros((num_obs, self.k))
+        num_obs, num_feat = np.shape(mat) #extract number of observation and features
+        cluster_membership = np.zeros((num_obs, self.k)) #intialize r matrix, denoting which matrix each point belongs to
 
-        dists = cdist(mat, self.cluster_centers)
+        dists = cdist(mat, self.cluster_centers) #compute distance to cluster centers from fit method for each observation
 
+        #Assign each point to the cluster to which it is closest to the center of
         for j in range(num_obs):
             curr_min_dist = 0
             for i in range(1, self.k):
@@ -116,6 +129,7 @@ class KMeans:
                     curr_min_dist = i
             cluster_membership[j][curr_min_dist] = 1
 
+        #Create the cluster label matrix to be output
         cluster_labels = np.zeros((num_obs, 1))
         for i in range(num_obs):
             for j in range(self.k):
