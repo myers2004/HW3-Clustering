@@ -49,7 +49,7 @@ class KMeans:
                 A 2D matrix where the rows are observations and columns are features
         """
 
-        SSE = 0 #a dummy SSE(sum of intra-cluster variation of each cluster)
+        SSE = 0 #a dummy SSE(sum of squared distances from the points in the clsuters to their centers)
         num_obs, num_feat = np.shape(mat) #extract number of observations and features in mat
 
         #Pick random points in mat to as the intial cluster centers
@@ -97,6 +97,9 @@ class KMeans:
         
         #Save the fitted cluster centers to the object
         self.cluster_centers = cluster_centers
+
+        #Save the final SSE
+        self.SSE = SSE
 
 
     def predict(self, mat: np.ndarray) -> np.ndarray:
@@ -149,6 +152,8 @@ class KMeans:
                 the squared-mean error of the fit model
         """
 
+        return self.SSE
+
     def get_centroids(self) -> np.ndarray:
         """
         Returns the centroid locations of the fit model.
@@ -157,3 +162,5 @@ class KMeans:
             np.ndarray
                 a `k x m` 2D matrix representing the cluster centroids of the fit model
         """
+
+        return self.cluster_centers
