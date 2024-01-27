@@ -20,6 +20,16 @@ class KMeans:
             max_iter: int
                 the maximum number of iterations before quitting model fit
         """
+        if type(k) != int:
+            raise(TypeError('k is not of type int'))
+        if type(tol) != float:
+            raise(TypeError('tol is not of type float'))
+        if type(max_iter) != int:
+            raise(TypeError('max_int is not of type int'))
+        
+        self.k = k
+        self.tol = tol
+        self.max_iter = max_iter
 
     def fit(self, mat: np.ndarray):
         """
@@ -37,6 +47,46 @@ class KMeans:
                 A 2D matrix where the rows are observations and columns are features
         """
 
+        SSE = 0
+        num_obs, num_feat = np.shape(mat)
+
+        I = np.random.choice(num_obs, self.k)
+        cluster_centers = mat[I, :]
+
+        for a in range(0, self.max_iter):
+            cluster_membership = np.zeros((num_obs, self.k))
+
+            dists = cdist(mat, cluster_centers)
+
+            for j in range(num_obs):
+                curr_min_dist = 0
+                for i in range(1, self.k):
+                    if dists[j][i] < dists[j][curr_min_dist]:
+                        curr_min_dist = i
+                cluster_membership[j][curr_min_dist] = 1
+                
+            new_SSE = 0
+
+            new_clusters = np.zeros((self.k, num_feat))
+            for i in range(self.k):
+                cluster_i = mat[cluster_membership[:, i] == 1]
+                for j in range(np.shape(cluster_i)[0]):
+                    for m in range(num_feat):
+                        new_SSE += np.power(cluster_i[j][m] - cluster_centers[i][m], 2)
+                new_clusters[i] = np.mean(cluster_i, axis = 0)
+            
+            if np.abs(new_SSE - SSE) < self.tol:
+                break
+
+            cluster_centers = new_clusters
+            SSE = new_SSE
+
+        if a == self.max_iter:
+            raise(RuntimeError('K-means fit failed to converge.'))
+        
+        self.cluster_centers = cluster_centers
+
+
     def predict(self, mat: np.ndarray) -> np.ndarray:
         """
         Predicts the cluster labels for a provided matrix of data points--
@@ -53,6 +103,27 @@ class KMeans:
             np.ndarray
                 a 1D array with the cluster label for each of the observations in `mat`
         """
+
+        num_obs, num_feat = np.shape(mat)
+        cluster_membership = np.zeros((num_obs, self.k))
+
+        dists = cdist(mat, self.cluster_centers)
+
+        for j in range(num_obs):
+            curr_min_dist = 0
+            for i in range(1, self.k):
+                if dists[j][i] < dists[j][curr_min_dist]:
+                    curr_min_dist = i
+            cluster_membership[j][curr_min_dist] = 1
+
+        cluster_labels = np.zeros((num_obs, 1))
+        for i in range(num_obs):
+            for j in range(self.k):
+                if cluster_membership[i][j] == 1:
+                    cluster_labels[i][0] = j
+        
+        return cluster_labels
+
 
     def get_error(self) -> float:
         """
