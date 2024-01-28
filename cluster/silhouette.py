@@ -30,7 +30,7 @@ class Silhouette:
  
         silhouette_scores = {i: 0.0 for i in range(num_obs)}
 
-        for i in range(k):
+        for i in range(k+1):
             points = np.asarray(y == i).nonzero()[0]
             print(len(points))
             #First get the mean dist from other points in a cluster for each point
@@ -50,7 +50,7 @@ class Silhouette:
                 if m != i:
                     cluster_m = X[y[:,0] == float(m)]
                     inter_dist = cdist(cluster_i,cluster_m)
-                    num_in_cluster_m = np.shape(inter_dist)[0]
+                    num_in_cluster_m = np.shape(inter_dist)[1]
                     for n in range(num_in_cluster):
                         sum = 0
                         for p in range(num_in_cluster_m):
@@ -66,9 +66,8 @@ class Silhouette:
         silhouette_scores_array = np.zeros((num_obs, 1))
         for key in silhouette_scores.keys():
             silhouette_scores_array[key] = silhouette_scores[key]
-        print(silhouette_scores_array)
         
-        #return silhouette_scores_array
+        return silhouette_scores_array
 
 
 
