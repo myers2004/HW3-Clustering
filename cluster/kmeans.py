@@ -24,6 +24,8 @@ class KMeans:
         #ensure input arguments are the right type
         if type(k) != int:
             raise(TypeError('k is not of type int'))
+        if k < 1:
+            raise(ValueError('k must be at least 1'))
         if type(tol) != float:
             raise(TypeError('tol is not of type float'))
         if type(max_iter) != int:
@@ -51,6 +53,9 @@ class KMeans:
 
         SSE = 0 #a dummy SSE(sum of squared distances from the points in the clsuters to their centers)
         num_obs, num_feat = np.shape(mat) #extract number of observations and features in mat
+
+        if self.k > num_obs:
+            raise(ValueError('k must be less than or equal to the number of observations.'))
 
         #Pick random points in mat to as the intial cluster centers
         random_rows = np.random.choice(num_obs, self.k)

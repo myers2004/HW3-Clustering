@@ -27,12 +27,14 @@ class Silhouette:
 
         k = int(np.max(y))
         num_obs, num_feat = np.shape(X)
+
+        if k == 0:
+            raise(ValueError('Need at least two clusters to calculate silhouette scores'))
  
         silhouette_scores = {i: 0.0 for i in range(num_obs)}
 
         for i in range(k+1):
             points = np.asarray(y == i).nonzero()[0]
-            print(len(points))
             #First get the mean dist from other points in a cluster for each point
             cluster_i = X[y[:,0] == float(i)]
             intra_dist = cdist(cluster_i,cluster_i)
@@ -42,11 +44,11 @@ class Silhouette:
                 sum = 0
                 for h in range(num_in_cluster):
                     sum += intra_dist[j][h]
-                a_i = sum / (num_in_cluster)
+                a_i = sum / (num_in_cluster - 1)
                 a.append(a_i)
 
             inter_dist_avg = {j: [] for j in range(num_in_cluster)}
-            for m in range(k):
+            for m in range(k+1):
                 if m != i:
                     cluster_m = X[y[:,0] == float(m)]
                     inter_dist = cdist(cluster_i,cluster_m)
