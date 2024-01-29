@@ -34,6 +34,7 @@ class KMeans:
         self.k = k
         self.tol = tol
         self.max_iter = max_iter
+        self.was_fit_run = False
 
     def fit(self, mat: np.ndarray):
         """
@@ -51,8 +52,18 @@ class KMeans:
                 A 2D matrix where the rows are observations and columns are features
         """
 
+        if type(mat) != np.ndarray:
+            raise(ValueError('Input data is not a numpy array.'))
+
         SSE = 0 #a dummy SSE(sum of squared distances from the points in the clsuters to their centers)
         num_obs, num_feat = np.shape(mat) #extract number of observations and features in mat
+
+        for i in range(num_obs):
+            for j in range(num_feat):
+                if type(mat[i][j]) == np.int64 or type(mat[i][j]) == np.float64:
+                    pass
+                else:
+                    raise(ValueError('Non-numeric present in data'))
 
         if self.k > num_obs:
             raise(ValueError('k must be less than or equal to the number of observations.'))
@@ -106,6 +117,9 @@ class KMeans:
         #Save the final SSE
         self.SSE = SSE
 
+        #Track that the fit method was run
+        self.was_fit_run = True
+
 
     def predict(self, mat: np.ndarray) -> np.ndarray:
         """
@@ -124,6 +138,8 @@ class KMeans:
                 a 1D array with the cluster label for each of the observations in `mat`
         """
 
+        if not self.was_fit_run:
+            raise(RuntimeError('predict called before fit. Please run fit first'))
         num_obs, num_feat = np.shape(mat) #extract number of observation and features
         cluster_membership = np.zeros((num_obs, self.k)) #intialize r matrix, denoting which matrix each point belongs to
 
@@ -157,6 +173,9 @@ class KMeans:
                 the squared-mean error of the fit model
         """
 
+        if not self.was_fit_run:
+            raise(RuntimeError('get_error called before fit. Please run fit first'))
+
         return self.SSE
 
     def get_centroids(self) -> np.ndarray:
@@ -167,5 +186,8 @@ class KMeans:
             np.ndarray
                 a `k x m` 2D matrix representing the cluster centroids of the fit model
         """
+
+        if not self.was_fit_run:
+            raise(RuntimeError('get_centroids called before fit. Please run fit first'))
 
         return self.cluster_centers
