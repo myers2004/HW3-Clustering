@@ -21,11 +21,14 @@ def main():
     uncomment this section once you are ready to visualize your kmeans + silhouette implementation
     """
     clusters, labels = make_clusters(k=4, scale=1)
+    np.random.seed(1)
     km = KMeans(k=4)
     km.fit(clusters)
     pred = km.predict(clusters)
     scores = Silhouette().score(clusters, pred)
     plot_multipanel(clusters, labels, pred, scores)
+
+    print(km.get_error())
     
 
 if __name__ == "__main__":

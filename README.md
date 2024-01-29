@@ -71,21 +71,21 @@ scores = silhouette.score(labels)
 
 [ TODO ] Complete the KMeans class with your implementation of the algorithm
 
-  [ ] complete the `fit` method  
-  [ ] complete the `predict` method  
-  [ ] complete the `get_error` method  
-  [ ] complete the `get_centroid` method  
+  [ X ] complete the `fit` method  
+  [ X ] complete the `predict` method  
+  [ X ] complete the `get_error` method  
+  [ X ] complete the `get_centroid` method  
 
 [ TODO ] Complete the Silhouette class with your implementation of the metric
-  [ ] complete the `score` method  
+  [ X ] complete the `score` method  
 
 [ TODO ] Unit Testing  
   [ ] KMeans Class  
-  [ ] Silhouette Class -- make sure to test against sklearn
+  [ X ] Silhouette Class -- make sure to test against sklearn
 
 [ TODO ] Packaging  
-  [ ] pip installable module  
-  [ ] github actions (install + pytest)  
+  [ X ] pip installable module  
+  [ X ] github actions (install + pytest)  
 
 For those who are particularly interested: try to implement the [k-means++](https://en.wikipedia.org/wiki/K-means%2B%2B) initialization algorithm. This is a method used in sklearn to initialize the clusters to best guesses and dramatically increases the speed of convergence for the algorithm.
 

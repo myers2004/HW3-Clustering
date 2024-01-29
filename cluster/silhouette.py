@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.spatial.distance import cdist
+import warnings
 
 
 class Silhouette:
@@ -31,6 +32,7 @@ class Silhouette:
         #Need at least two clusters to have an inter-cluster distance
         if k == 0:
             raise(ValueError('Need at least two clusters to calculate silhouette scores'))
+        
 
         #Has a key for each observation, updated with scores as they are calculated
         silhouette_scores = {i: 0.0 for i in range(num_obs)}
@@ -58,8 +60,12 @@ class Silhouette:
                 for h in range(num_in_cluster):
                     sum += intra_dist[j][h]
                 #calculate a_i for each point
-                a_i = sum / (num_in_cluster - 1) #-1 as we subtract out the distance from a point to itself
-                a.append(a_i)                    #add to a list
+                if num_in_cluster - 1 == 0:
+                    warnings.warn('Cluster of size 1 encountered, a_i set to 0.')
+                    a_i = 0.0
+                else:
+                    a_i = sum / (num_in_cluster - 1) #-1 as we subtract out the distance from a point to itself
+                a.append(a_i)                        #add to "a" list
             
             #Fnding b_i for each point, the average distance to other points 
             # belonging to different clusters

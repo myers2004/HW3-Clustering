@@ -68,8 +68,8 @@ class KMeans:
         if self.k > num_obs:
             raise(ValueError('k must be less than or equal to the number of observations.'))
 
-        #Pick random points in mat to as the intial cluster centers
-        random_rows = np.random.choice(num_obs, self.k)
+        #Pick random unique points in mat as the intial cluster centers
+        random_rows = np.random.choice(num_obs, self.k, replace=False)
         cluster_centers = mat[random_rows, :]
 
         #Now to do Loyd's algorithm
