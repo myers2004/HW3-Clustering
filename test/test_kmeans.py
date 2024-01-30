@@ -51,3 +51,19 @@ def test_kmeans_():
     #Test an error is raised if something other than a numpy array is input into fit
     with pytest.raises(ValueError):
         km.fit(4)
+
+    #Test that predict returns a 1D numpy array with label for each obs
+    k = 17
+    clusters, labels = make_clusters(k=k, scale=1)
+    num_obs = np.shape(clusters)[0]
+    km = KMeans(k=k)
+    km.fit(clusters)
+    pred = km.predict(clusters)
+    assert type(pred) == np.ndarray
+    assert np.shape(pred)[0] == num_obs
+    assert np.shape(pred)[1] == 1
+
+    #Test that k clusters are generated
+    gen_k = int(np.max(pred)) + 1 #generated k (index starts at 0 so +1)
+    assert gen_k == k
+

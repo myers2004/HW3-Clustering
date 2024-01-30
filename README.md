@@ -1,6 +1,8 @@
 # Assignment 3
 Implementation of KMeans and Silhouette Scoring
 
+[![Build Status](https://github.com/myers2004/HW3-Clustering/actions/workflows/test.yml/badge.svg?event=push)](https://github.com/myers2004/HW3-Clustering/actions/workflows/test.yml)
+
 # Assignment
 
 ## Overview
