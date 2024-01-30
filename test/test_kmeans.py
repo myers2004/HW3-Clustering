@@ -47,3 +47,7 @@ def test_kmeans_():
     with pytest.raises(ValueError):
         test = np.array([[4,3, 'D', 'E']])
         km.fit(test)
+
+    #Test an error is raised if something other than a numpy array is input into fit
+    with pytest.raises(ValueError):
+        km.fit(4)
